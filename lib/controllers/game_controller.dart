@@ -91,6 +91,8 @@ class GameController extends ChangeNotifier {
 
   void resetGame() {
     level = 1;
+    matchedPairs = 0;
     initializeGame();
+    notifyListeners();
   }
 }
