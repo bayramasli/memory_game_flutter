@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memory_game_flutter/screens/game_screen.dart';
 import 'package:memory_game_flutter/screens/score_board_screen.dart';
+import 'package:memory_game_flutter/controllers/game_controller.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -50,10 +52,14 @@ class HomeScreen extends StatelessWidget {
                 context,
                 'Yeni Oyun',
                 Icons.play_arrow,
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const GameScreen()),
-                ),
+                () {
+                  final gameController = Provider.of<GameController>(context, listen: false);
+                  gameController.resetGame();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GameScreen()),
+                  );
+                },
               ),
               const SizedBox(height: 20),
               _buildMenuButton(
