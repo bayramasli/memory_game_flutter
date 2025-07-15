@@ -1,0 +1,49 @@
+name: memory_game_flutter
+description: Emoji tabanlı hafıza kart eşleştirme oyunu
+
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.9
+  provider: ^6.0.5
+  shared_preferences: ^2.2.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  audioplayers: ^4.1.0
+  uuid: ^3.0.7
+  equatable: ^2.0.5
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  mockito: ^5.4.0
+  build_runner: ^2.4.4
+  flutter_gen_runner: ^5.3.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  
+  assets:
+    - assets/images/
+    - assets/sounds/
+    - assets/fonts/
+    - assets/animations/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600

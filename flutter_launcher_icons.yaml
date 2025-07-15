@@ -1,0 +1,6 @@
+android: true
+ios: true
+image_path: "assets/icons/app_icon.png"
+adaptive_icon_background: "#42A5F5"
+adaptive_icon_foreground: "assets/icons/icon_foreground.png"
+remove_alpha_ios: true
