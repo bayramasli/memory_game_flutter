@@ -11,6 +11,16 @@ class ResultScreen extends StatelessWidget {
     final gameController = Provider.of<GameController>(context);
     final level = gameController.level - 1; // Tamamlanan seviye
 
+    // Skor kaydını tetikle (sadece ilk build'de)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (gameController.scoreBoard.isEmpty ||
+          gameController.scoreBoard.last.level != level ||
+          gameController.scoreBoard.last.totalTime != gameController.totalElapsedSeconds) {
+        gameController.addScore(level, 0); // time parametresi kullanılmıyor, totalTime kaydediliyor
+      }
+      gameController.addScore(level, 0);
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('Oyun Sonucu')),
       body: Center(

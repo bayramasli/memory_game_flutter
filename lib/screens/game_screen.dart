@@ -92,7 +92,7 @@ class _GameScreenState extends State<GameScreen> {
               );
             },
           ),
-          title: Text('Seviye ${gameController.level}'),
+          title: Text('Seviye ${gameController.level}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
           actions: [
             IconButton(
               icon: Icon(gameController.isTimerActive ? Icons.pause : Icons.play_arrow),
@@ -137,31 +137,105 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ],
         ),
-        body: Center(
-          child: SizedBox(
-            width: crossAxisCount * cardSize + (crossAxisCount - 1) * spacing,
-            height: rows * cardSize + (rows - 1) * spacing,
-            child: GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(12),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: spacing,
-                mainAxisSpacing: spacing,
-                childAspectRatio: 1,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+              // Seviye ilerleme barı
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: SizedBox(
+                  height: 28,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 16,
+                    itemBuilder: (context, i) {
+                      final isPassed = gameController.level > i;
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: isPassed ? Colors.green : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${i + 1}',
+                            style: TextStyle(
+                              color: isPassed ? Colors.white : Colors.black54,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-              itemCount: totalCards,
-              itemBuilder: (context, index) {
-                final card = gameController.cards[index];
-                return MemoryCard(
-                  card: card,
-                  onTap: () => gameController.handleCardTap(card),
-                  isDisabled: gameController.isProcessing || card.isMatched || !gameController.isTimerActive,
-                  size: cardSize,
-                );
-              },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: gameController.timeLeft / (gameController.baseTime + (gameController.level - 1) * 5),
+                      child: Container(
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: () {
+                            final total = gameController.baseTime + (gameController.level - 1) * 5;
+                            final left = gameController.timeLeft;
+                            if (left <= total * 0.2) {
+                              return Colors.red;
+                            } else if (left <= total * 0.5) {
+                              return Colors.orange;
+                            } else {
+                              return Colors.green;
+                            }
+                          }(),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Expanded(
+              child: Center(
+                child: SizedBox(
+                  width: crossAxisCount * cardSize + (crossAxisCount - 1) * spacing,
+                  height: rows * cardSize + (rows - 1) * spacing,
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: spacing,
+                      mainAxisSpacing: spacing,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: totalCards,
+                    itemBuilder: (context, index) {
+                      final card = gameController.cards[index];
+                      return MemoryCard(
+                        card: card,
+                        onTap: () => gameController.handleCardTap(card),
+                        isDisabled: gameController.isProcessing || card.isMatched || !gameController.isTimerActive,
+                        size: cardSize,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
         // floatingActionButton kaldırıldı
       ),
@@ -174,6 +248,15 @@ class _LoseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gameController = Provider.of<GameController>(context, listen: false);
+    final level = gameController.level - 1;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (gameController.scoreBoard.isEmpty ||
+          gameController.scoreBoard.first.level != level ||
+          gameController.scoreBoard.first.totalTime != gameController.totalElapsedSeconds) {
+        gameController.addScore(level, 0);
+      }
+    });
     return Scaffold(
       appBar: AppBar(title: const Text('Kaybettiniz')),
       body: Center(

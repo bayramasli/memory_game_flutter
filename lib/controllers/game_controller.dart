@@ -7,17 +7,20 @@ import 'dart:convert';
 class ScoreEntry {
   final int level;
   final int time;
+  final int totalTime;
   final DateTime date;
-  ScoreEntry({required this.level, required this.time, required this.date});
+  ScoreEntry({required this.level, required this.time, required this.totalTime, required this.date});
 
   Map<String, dynamic> toJson() => {
     'level': level,
     'time': time,
+    'totalTime': totalTime,
     'date': date.toIso8601String(),
   };
   factory ScoreEntry.fromJson(Map<String, dynamic> json) => ScoreEntry(
     level: json['level'],
     time: json['time'],
+    totalTime: json['totalTime'] ?? 0,
     date: DateTime.parse(json['date']),
   );
 }
@@ -35,6 +38,8 @@ class GameController extends ChangeNotifier {
   bool isTimerActive = false;
   VoidCallback? onTimeUp;
   Timer? _timer;
+  DateTime? _gameStartTime;
+  int _totalElapsedSeconds = 0;
 
   List<ScoreEntry> scoreBoard = [];
 
@@ -55,8 +60,16 @@ class GameController extends ChangeNotifier {
   }
 
   void addScore(int level, int time) {
-    scoreBoard.add(ScoreEntry(level: level, time: time, date: DateTime.now()));
+    print('Skor ekleniyor: level=$level, totalTime=$_totalElapsedSeconds');
+    scoreBoard.insert(0, ScoreEntry(level: level, time: time, totalTime: _totalElapsedSeconds, date: DateTime.now()));
     saveScores();
+    notifyListeners();
+  }
+
+  void clearScores() async {
+    scoreBoard.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('scoreBoard');
     notifyListeners();
   }
 
@@ -76,6 +89,7 @@ class GameController extends ChangeNotifier {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!isTimerActive) return;
       timeLeft--;
+      _totalElapsedSeconds++;
       notifyListeners();
       if (timeLeft <= 0) {
         isTimerActive = false;
@@ -129,6 +143,8 @@ class GameController extends ChangeNotifier {
     secondSelectedCard = null;
     stopTimer();
     timeLeft = baseTime + (level - 1) * 5;
+    _gameStartTime = DateTime.now();
+    _totalElapsedSeconds = 0;
     if (notify) notifyListeners();
   }
 
@@ -152,7 +168,6 @@ class GameController extends ChangeNotifier {
         isProcessing = false;
         notifyListeners();
         if (matchedPairs == totalPairs) {
-          addScore(level, baseTime + (level - 1) * 5 - timeLeft);
           await Future.delayed(const Duration(milliseconds: 1000));
           level++;
           initializeGame(notify: false); // notify false, GameScreen kendisi rebuild edecek
@@ -173,7 +188,11 @@ class GameController extends ChangeNotifier {
   void resetGame() {
     level = 1;
     matchedPairs = 0;
+    _totalElapsedSeconds = 0;
+    _gameStartTime = DateTime.now();
     initializeGame();
     notifyListeners();
   }
+
+  int get totalElapsedSeconds => _totalElapsedSeconds;
 }
