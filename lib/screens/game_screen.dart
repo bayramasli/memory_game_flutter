@@ -66,6 +66,21 @@ class _GameScreenState extends State<GameScreen> {
     super.dispose();
   }
 
+  Future<void> _handleExitAndAddScore(BuildContext context) async {
+    final gameController = Provider.of<GameController>(context, listen: false);
+    final level = gameController.level - 1;
+    // Skor zaten eklenmediyse ekle
+    if (gameController.scoreBoard.isEmpty ||
+        gameController.scoreBoard.first.level != level ||
+        gameController.scoreBoard.first.totalTime != gameController.totalElapsedSeconds) {
+      gameController.addScore(level, 0);
+    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     try {
@@ -80,10 +95,7 @@ class _GameScreenState extends State<GameScreen> {
       final rows = (totalCards / crossAxisCount).ceil();
       return WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-          );
+          await _handleExitAndAddScore(context);
           return false;
         },
         child: Scaffold(
@@ -91,11 +103,8 @@ class _GameScreenState extends State<GameScreen> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               tooltip: 'Ana Menü',
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => false,
-                );
+              onPressed: () async {
+                await _handleExitAndAddScore(context);
               },
             ),
             title: Text('Seviye ${gameController.level}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
