@@ -151,18 +151,24 @@ class GameController extends ChangeNotifier {
   Future<void> handleCardTap(CardModel card) async {
     if (!isTimerActive) return;
     if (card.isFaceUp || card.isMatched || isProcessing) return;
-    card.isFaceUp = true;
+    final index = cards.indexOf(card);
+    if (index == -1) return;
+    cards[index] = card.copyWith(isFaceUp: true);
+    cards = List<CardModel>.from(cards);
     notifyListeners();
     if (firstSelectedCard == null) {
-      firstSelectedCard = card;
+      firstSelectedCard = cards[index];
     } else {
       isProcessing = true;
-      secondSelectedCard = card;
+      secondSelectedCard = cards[index];
       notifyListeners();
       if (firstSelectedCard!.id == secondSelectedCard!.id) {
         await Future.delayed(const Duration(milliseconds: 200));
-        firstSelectedCard!.isMatched = true;
-        secondSelectedCard!.isMatched = true;
+        final firstIndex = cards.indexOf(firstSelectedCard!);
+        final secondIndex = cards.indexOf(secondSelectedCard!);
+        if (firstIndex != -1) cards[firstIndex] = cards[firstIndex].copyWith(isMatched: true);
+        if (secondIndex != -1) cards[secondIndex] = cards[secondIndex].copyWith(isMatched: true);
+        cards = List<CardModel>.from(cards);
         matchedPairs++;
         firstSelectedCard = null;
         secondSelectedCard = null;
@@ -175,8 +181,11 @@ class GameController extends ChangeNotifier {
         }
       } else {
         await Future.delayed(const Duration(milliseconds: 300));
-        firstSelectedCard!.isFaceUp = false;
-        secondSelectedCard!.isFaceUp = false;
+        final firstIndex = cards.indexOf(firstSelectedCard!);
+        final secondIndex = cards.indexOf(secondSelectedCard!);
+        if (firstIndex != -1) cards[firstIndex] = cards[firstIndex].copyWith(isFaceUp: false);
+        if (secondIndex != -1) cards[secondIndex] = cards[secondIndex].copyWith(isFaceUp: false);
+        cards = List<CardModel>.from(cards);
         firstSelectedCard = null;
         secondSelectedCard = null;
         isProcessing = false;

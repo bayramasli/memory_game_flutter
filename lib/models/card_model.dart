@@ -11,6 +11,20 @@ class CardModel {
     this.isMatched = false,
   });
 
+  CardModel copyWith({
+    bool? isFaceUp,
+    bool? isMatched,
+    int? value,
+    String? id,
+  }) {
+    return CardModel(
+      value: value ?? this.value,
+      id: id ?? this.id,
+      isFaceUp: isFaceUp ?? this.isFaceUp,
+      isMatched: isMatched ?? this.isMatched,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
