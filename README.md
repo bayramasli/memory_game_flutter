@@ -1,6 +1,6 @@
 # 🧠 Memory Game Flutter
 
-![App Screenshot](assets/screenshots/game_screenshot.png)
+(https://bayramasli.github.io/memory_game_flutter/)
 
 Hayvan emojileriyle eğlenceli bir hafıza eşleştirme oyunu. Her seviyede kart sayısı artar, zorluk yükselir! 🔥
 
