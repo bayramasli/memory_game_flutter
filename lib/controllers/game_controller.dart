@@ -160,7 +160,7 @@ class GameController extends ChangeNotifier {
       secondSelectedCard = card;
       notifyListeners();
       if (firstSelectedCard!.id == secondSelectedCard!.id) {
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(const Duration(milliseconds: 200));
         firstSelectedCard!.isMatched = true;
         secondSelectedCard!.isMatched = true;
         matchedPairs++;
@@ -169,12 +169,12 @@ class GameController extends ChangeNotifier {
         isProcessing = false;
         notifyListeners();
         if (matchedPairs == totalPairs) {
-          await Future.delayed(const Duration(milliseconds: 1000));
+          await Future.delayed(const Duration(milliseconds: 300));
           level++;
           initializeGame(notify: true);
         }
       } else {
-        await Future.delayed(const Duration(milliseconds: 1000));
+        await Future.delayed(const Duration(milliseconds: 300));
         firstSelectedCard!.isFaceUp = false;
         secondSelectedCard!.isFaceUp = false;
         firstSelectedCard = null;

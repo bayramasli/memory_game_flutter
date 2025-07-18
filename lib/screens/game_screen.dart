@@ -226,6 +226,7 @@ class _GameScreenState extends State<GameScreen> {
                       itemBuilder: (context, index) {
                         final card = gameController.cards[index];
                         return MemoryCard(
+                          key: ValueKey('${card.id}-${card.isFaceUp}-${card.isMatched}'),
                           card: card,
                           onTap: () => gameController.handleCardTap(card),
                           isDisabled: gameController.isProcessing || card.isMatched || !gameController.isTimerActive,

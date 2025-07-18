@@ -36,7 +36,7 @@ class _MemoryCardState extends State<MemoryCard> {
     return GestureDetector(
       onTap: widget.isDisabled ? null : widget.onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 100),
         width: cardSize,
         height: cardSize,
         decoration: BoxDecoration(
@@ -60,7 +60,7 @@ class _MemoryCardState extends State<MemoryCard> {
         ),
         child: Center(
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 100),
             child: widget.card.isFaceUp || widget.card.isMatched
                 ? Text(
                     emoji,
