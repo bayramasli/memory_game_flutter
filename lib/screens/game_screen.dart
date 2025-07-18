@@ -134,21 +134,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: Row(
-                  children: [
-                    Icon(Icons.timer, color: Colors.white),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${gameController.timeLeft}',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(width: 16),
-                    Text(
-                      '${gameController.matchedPairs}/${gameController.totalPairs}',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ),
+                child: _TimerAndScoreBar(),
               ),
             ],
           ),
@@ -320,6 +306,37 @@ class _SettingsDialog extends StatelessWidget {
           child: const Text('Kapat'),
         ),
       ],
+    );
+  }
+}
+
+class _TimerAndScoreBar extends StatelessWidget {
+  const _TimerAndScoreBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<GameController, List<int>>(
+      selector: (_, gc) => [gc.timeLeft, gc.matchedPairs, gc.totalPairs],
+      builder: (context, data, child) {
+        final timeLeft = data[0];
+        final matchedPairs = data[1];
+        final totalPairs = data[2];
+        return Row(
+          children: [
+            const Icon(Icons.timer, color: Colors.white),
+            const SizedBox(width: 4),
+            Text(
+              '$timeLeft',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              '$matchedPairs/$totalPairs',
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
+        );
+      },
     );
   }
 }

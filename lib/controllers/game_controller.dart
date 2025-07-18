@@ -149,6 +149,7 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> handleCardTap(CardModel card) async {
+    if (!isTimerActive) return;
     if (card.isFaceUp || card.isMatched || isProcessing) return;
     card.isFaceUp = true;
     notifyListeners();
@@ -170,8 +171,7 @@ class GameController extends ChangeNotifier {
         if (matchedPairs == totalPairs) {
           await Future.delayed(const Duration(milliseconds: 1000));
           level++;
-          initializeGame(notify: false); // notify false, GameScreen kendisi rebuild edecek
-          notifyListeners();
+          initializeGame(notify: true);
         }
       } else {
         await Future.delayed(const Duration(milliseconds: 1000));
@@ -190,8 +190,7 @@ class GameController extends ChangeNotifier {
     matchedPairs = 0;
     _totalElapsedSeconds = 0;
     _gameStartTime = DateTime.now();
-    initializeGame();
-    notifyListeners();
+    initializeGame(notify: true);
   }
 
   int get totalElapsedSeconds => _totalElapsedSeconds;
